@@ -1,9 +1,18 @@
 import Student from "../models/Student.js";
 
-// Get all students
+// Get all students for super admin 
 export const getAllStudents = async (req, res) => {
   try {
     const students = await Student.find();
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getStudentBySundayschool = async (req, res) => {
+  try {
+    const students = await Student.find({ sundaySchoolId: req.params.sundaySchoolId });
     res.json(students);
   } catch (error) {
     res.status(500).json({ error: error.message });

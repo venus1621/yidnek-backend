@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors"; // For handling CORS
 import routes from "./routes/index.js";
-import dashboardRoutes from "./routes/dashboardRoutes.js";
+
 import authRoutes from "./routes/authRoutes.js";
 import session from "express-session";
 // Initialize Express app
@@ -13,7 +13,7 @@ const app = express();
 app.use(
   cors({
     origin:
-      "https://id-preview--434609bf-1572-4ee9-974d-d0c2f523b9f6.lovable.app", // Allows all origins (use specific domains in production for security)
+      "https://434609bf-1572-4ee9-974d-d0c2f523b9f6.lovableproject.com", // Allows all origins (use specific domains in production for security)
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Required if using cookies or sessions
@@ -53,7 +53,6 @@ connectDB();
 // Routes
 app.use("/", authRoutes); // Authentication routes (e.g., /login)
 app.use("/api", routes); // Main API routes (e.g., /api/dioceses)
-app.use("/dashboard", dashboardRoutes); // Dashboard-specific routes
 
 // Root route - Simple API welcome message
 app.get("/", (req, res) => {

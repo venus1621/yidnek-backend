@@ -10,7 +10,6 @@ import studentRoutes from "./studentRoutes.js";
 import classEnrollmentRoutes from "./classEnrollmentRoutes.js";
 import assessmentRoutes from "./assessmentRoutes.js";
 import studentMarkRoutes from "./studentMarkRoutes.js";
-import guardianRoutes from "./guardianRoutes.js";
 import registrationRoutes from "./registrationRoutes.js";
 import userRoutes from "./userRoutes.js";
 import roleRoutes from "./roleRoutes.js";
@@ -29,7 +28,7 @@ router.use("/students", studentRoutes);
 router.use("/class-enrollments", classEnrollmentRoutes);
 router.use("/assessments", assessmentRoutes);
 router.use("/student-marks", studentMarkRoutes);
-router.use("/guardians", guardianRoutes);
+
 router.use("/registrations", registrationRoutes);
 router.use("/users", userRoutes);
 router.use("/roles", roleRoutes);

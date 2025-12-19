@@ -7,6 +7,11 @@ const studentSchema = new mongoose.Schema(
     fatherName: { type: String, required: true, trim: true },
     grandfatherName: { type: String, required: true, trim: true },
 
+    sundaySchoolId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SundaySchool",
+      required: true,
+    },
     gender: {
       type: String,
       enum: ["MALE", "FEMALE"],

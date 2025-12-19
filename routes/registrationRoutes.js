@@ -3,7 +3,6 @@ import {
   getAllRegistrations,
   getRegistrationById,
   getRegistrationsByStudent,
-  getRegistrationsByGuardian,
   createRegistration,
   updateRegistration,
   deleteRegistration,
@@ -13,7 +12,6 @@ const router = express.Router();
 
 router.get("/", getAllRegistrations);
 router.get("/student/:studentId", getRegistrationsByStudent);
-router.get("/guardian/:guardianId", getRegistrationsByGuardian);
 router.get("/:id", getRegistrationById);
 router.post("/", createRegistration);
 router.put("/:id", updateRegistration);

@@ -1,6 +1,5 @@
 import Registration from "../models/Registration.js";
 import Student from "../models/Student.js";
-import Guardian from "../models/Guardian.js";
 
 // Get all registrations
 export const getAllRegistrations = async (req, res) => {
@@ -32,19 +31,9 @@ export const getRegistrationById = async (req, res) => {
 // Get registrations by student
 export const getRegistrationsByStudent = async (req, res) => {
   try {
-    const registrations = await Registration.find({ studentId: req.params.studentId })
-      .populate("studentId")
-      .populate("guardianId");
-    res.json(registrations);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-// Get registrations by guardian
-export const getRegistrationsByGuardian = async (req, res) => {
-  try {
-    const registrations = await Registration.find({ guardianId: req.params.guardianId })
+    const registrations = await Registration.find({
+      studentId: req.params.studentId,
+    })
       .populate("studentId")
       .populate("guardianId");
     res.json(registrations);
@@ -58,20 +47,17 @@ export const createRegistration = async (req, res) => {
   try {
     // Verify student and guardian exist
     const student = await Student.findById(req.body.studentId);
-    const guardian = await Guardian.findById(req.body.guardianId);
-    
+
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
-    if (!guardian) {
-      return res.status(404).json({ error: "Guardian not found" });
-    }
-    
+
     const registration = new Registration(req.body);
     await registration.save();
-    const populated = await Registration.findById(registration._id)
-      .populate("studentId")
-      .populate("guardianId");
+    const populated = await Registration.findById(registration._id).populate(
+      "studentId"
+    );
+
     res.status(201).json(populated);
   } catch (error) {
     res.status(400).json({ error: error.message });
