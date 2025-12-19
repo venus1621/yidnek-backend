@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import Role from "../models/Role.js";
-
+import SundaySchool from "../models/SundaySchool.js";
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
@@ -32,6 +32,10 @@ export const createUser = async (req, res) => {
       const roles = await Role.find({ _id: { $in: req.body.roles } });
       if (roles.length !== req.body.roles.length) {
         return res.status(404).json({ error: "One or more roles not found" });
+      }
+      const sundaySchool = await SundaySchool.findById(req.body.sundaySchoolId);
+      if (!sundaySchool) {
+        return res.status(404).json({ error: "Sunday School not found" });
       }
     }
     const user = new User(req.body);
