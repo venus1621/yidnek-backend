@@ -4,7 +4,7 @@ import cors from "cors"; // For handling CORS
 import routes from "./routes/index.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-
+import session from "express-session";
 // Initialize Express app
 const app = express();
 
