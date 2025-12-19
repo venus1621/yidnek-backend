@@ -4,41 +4,29 @@ import session from "express-session";
 import routes from "./routes/index.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import cors from "cors"; // ← Add this import
 
 const app = express();
+
+// Enable CORS - this fixes your error
+app.use(
+  cors({
+    origin: "*", // ← This allows EVERY origin
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // if you use cookies/sessions
+  })
+);
 
 // Middleware
 app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET || "dev-secret",
-//     resave: false,
-//     saveUninitialized: false,
-//   })
-// );
-
-// MongoDB connection
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(
-        "mongodb+srv://venushailemeskel2_db_user:EnkJfmHa6IIzMAo1@cluster0.5qhgkss.mongodb.net/"
-    );
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error.message);
-    process.exit(1);
-  }
-};
-
-// Connect to MongoDB
-connectDB();
+// ... rest of your code remains the same
 
 // Routes
 app.use("/", authRoutes);
 app.use("/api", routes);
 app.use("/dashboard", dashboardRoutes);
-
 // Root route -> simple API info
 app.get("/", (req, res) => {
   res.json({
