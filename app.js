@@ -1,40 +1,68 @@
 import express from "express";
 import mongoose from "mongoose";
-import session from "express-session";
+import cors from "cors"; // For handling CORS
 import routes from "./routes/index.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import cors from "cors"; // ← Add this import
 
+// Initialize Express app
 const app = express();
 
-// Enable CORS - this fixes your error
+// Global Middleware
+// Enable CORS - Allow requests from ANY origin (open to all websites)
 app.use(
   cors({
-    origin: "*", // ← This allows EVERY origin
+    origin: "*", // Allows all origins (use specific domains in production for security)
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // if you use cookies/sessions
+    credentials: true, // Required if using cookies or sessions
   })
 );
 
-// Middleware
+// Parse JSON request bodies
 app.use(express.json());
+// Uncomment if you need URL-encoded form data
 // app.use(express.urlencoded({ extended: true }));
-// ... rest of your code remains the same
+
+// Uncomment if you need session support (currently disabled)
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET || "dev-secret",
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
+
+// MongoDB Connection
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(
+      "mongodb+srv://venushailemeskel2_db_user:EnkJfmHa6IIzMAo1@cluster0.5qhgkss.mongodb.net/"
+    );
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error("MongoDB Connection Error:", error.message);
+    process.exit(1); // Exit process if connection fails
+  }
+};
+
+// Connect to MongoDB
+connectDB();
 
 // Routes
-app.use("/", authRoutes);
-app.use("/api", routes);
-app.use("/dashboard", dashboardRoutes);
-// Root route -> simple API info
+app.use("/", authRoutes); // Authentication routes (e.g., /login)
+app.use("/api", routes); // Main API routes (e.g., /api/dioceses)
+app.use("/dashboard", dashboardRoutes); // Dashboard-specific routes
+
+// Root route - Simple API welcome message
 app.get("/", (req, res) => {
   res.json({
     message: "Church Management System API",
+    status: "online",
     endpoints: {
+      auth: "/login",
       api: "/api",
       dashboard: "/dashboard",
-      auth: "/login",
     },
   });
 });
@@ -44,11 +72,11 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({
     message: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }), // Show stack in dev only
   });
 });
 
-// 404 handler
+// 404 - Route not found
 app.use((req, res) => {
   res.status(404).json({
     message: "Route not found",
@@ -57,4 +85,3 @@ app.use((req, res) => {
 });
 
 export default app;
-
