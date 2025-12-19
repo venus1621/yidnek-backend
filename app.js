@@ -25,13 +25,13 @@ app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 
 // Uncomment if you need session support (currently disabled)
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET || "dev-secret",
-//     resave: false,
-//     saveUninitialized: false,
-//   })
-// );
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "dev-secret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 // MongoDB Connection
 const connectDB = async () => {
