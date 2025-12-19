@@ -9,14 +9,14 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "dev-secret",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+// app.use(express.urlencoded({ extended: true }));
+// app.use(
+//   session({
+//     secret: process.env.SESSION_SECRET || "dev-secret",
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
 
 // MongoDB connection
 const connectDB = async () => {
