@@ -59,7 +59,7 @@ export const createTeacher = async (req, res) => {
       username:
         req.body.username ||
         `${firstName.toLowerCase()}.${lastName.toLowerCase()}`, // default username
-      passwordHash: password, // IMPORTANT: You should hash this in a real app!
+      passwordHash: req.body.password, // IMPORTANT: You should hash this in a real app!
       roles: [teacherRole._id],
       sundaySchoolId: sundaySchool._id,
       teacherId: teacher._id,
