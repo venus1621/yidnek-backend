@@ -82,3 +82,60 @@ export const deleteClass = async (req, res) => {
   }
 };
 
+export const activateClass = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate MongoDB ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid class ID" });
+    }
+
+    const classDoc = await Class.findByIdAndUpdate(
+      id,
+      { status: "ACTIVE" },
+      { new: true, runValidators: true }
+    );
+
+    if (!classDoc) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+
+    res.status(200).json({
+      message: "Class activated successfully",
+      data: classDoc,
+    });
+  } catch (error) {
+    console.error("Error activating class:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Deactivate a class
+export const deactivateClass = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid class ID" });
+    }
+
+    const classDoc = await Class.findByIdAndUpdate(
+      id,
+      { status: "INACTIVE" },
+      { new: true, runValidators: true }
+    );
+
+    if (!classDoc) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+
+    res.status(200).json({
+      message: "Class deactivated successfully",
+      data: classDoc,
+    });
+  } catch (error) {
+    console.error("Error deactivating class:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

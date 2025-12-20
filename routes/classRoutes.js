@@ -6,6 +6,8 @@ import {
   createClass,
   updateClass,
   deleteClass,
+  activateClass,
+  deactivateClass,
 } from "../controllers/classController.js";
 
 const router = express.Router();
@@ -13,6 +15,8 @@ const router = express.Router();
 router.get("/", getAllClasses);
 router.get("/sunday-school/:sundaySchoolId", getClassesBySundaySchool);
 router.get("/:id", getClassById);
+router.put("/:id/activate", activateClass);
+router.put("/:id/deactivate", deactivateClass);
 router.post("/", createClass);
 router.put("/:id", updateClass);
 router.delete("/:id", deleteClass);
