@@ -12,7 +12,7 @@ const app = express();
 // Enable CORS - Allow requests from ANY origin (open to all websites)
 app.use(
   cors({
-    origin: "https://dioceses-direct.lovable.app", // Allows all origins (use specific domains in production for security)
+    origin: "*", // Allows all origins (use specific domains in production for security)
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Required if using cookies or sessions
