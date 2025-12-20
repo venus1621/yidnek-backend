@@ -33,6 +33,7 @@ export const login = async (req, res) => {
     message: "Login successful",
     roleName,
     sundaySchoolId: user.sundaySchoolId || null,
+    teacherId: user.teacherId || null,
   });
 };
 
