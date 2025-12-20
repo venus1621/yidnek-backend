@@ -29,7 +29,11 @@ export const login = async (req, res) => {
   req.session.roleName = roleName;
   req.session.username = user.username;
   req.session.sundaySchoolId = user.sundaySchoolId || null;
-  return res.json({ message: "Login successful", roleName });
+  return res.json({
+    message: "Login successful",
+    roleName,
+    sundaySchoolId: user.sundaySchoolId || null,
+  });
 };
 
 export const logout = (req, res) => {
