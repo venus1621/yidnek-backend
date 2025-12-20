@@ -35,32 +35,8 @@ export const getStudentById = async (req, res) => {
 // Create student
 export const createStudent = async (req, res) => {
   try {
-    // 1. Check if user is authenticated
-    if (!req.session.userId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    // 2. Get the sundaySchoolId from the session (set during login)
-    const sundaySchoolId = req.session.sundaySchoolId;
-
-    if (!sundaySchoolId) {
-      return res
-        .status(403)
-        .json({ error: "You are not assigned to any Sunday School" });
-    }
-
-    // 3. Prevent client from overriding sundaySchoolId
-    // Remove it from req.body if someone tries to send it
-    const { sundaySchoolId: _, ...studentData } = req.body;
-
-    // 4. Create student with the session's sundaySchoolId
-    const student = new Student({
-      ...studentData,
-      sundaySchoolId, // Automatically set from session
-    });
-
+    const student = new Student(req.body);
     await student.save();
-
     res.status(201).json(student);
   } catch (error) {
     res.status(400).json({ error: error.message });
