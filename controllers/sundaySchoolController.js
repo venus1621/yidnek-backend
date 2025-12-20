@@ -14,7 +14,10 @@ export const getAllSundaySchools = async (req, res) => {
 // Get single Sunday school
 export const getSundaySchoolById = async (req, res) => {
   try {
-    const sundaySchool = await SundaySchool.findById(req.params.id).populate("woredaId");
+    const sundaySchool = await SundaySchool.findById(req.params.id)
+      .populate("woredaId")
+      .populate("dioceseId")
+      .populate("churchId");
     if (!sundaySchool) {
       return res.status(404).json({ error: "Sunday school not found" });
     }
