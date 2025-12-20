@@ -8,14 +8,15 @@ import routes from "./routes/index.js";
 const app = express();
 
 // 1. CORS must be first - before any routes or other middleware
-app.use(
-  cors({
-    origin: "https://dioceses-direct.lovable.app", // or "*" for testing
-    credentials: true, // VERY IMPORTANT for cookies/sessions
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// Allow ALL origins (use only for development/testing!)
+app.use(cors({
+  origin: true,              // allows any origin (wildcard *)
+  credentials: true,         // still allows cookies/sessions
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  preflightContinue: false,
+  optionsSuccessStatus: 200,
+}));
 
 // 2. Parse JSON
 app.use(express.json());
