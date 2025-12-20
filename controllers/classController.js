@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Class from "../models/Class.js";
 import SundaySchool from "../models/SundaySchool.js";
 
@@ -14,7 +15,9 @@ export const getAllClasses = async (req, res) => {
 // Get single class
 export const getClassById = async (req, res) => {
   try {
-    const classItem = await Class.findById(req.params.id).populate("sundaySchoolId");
+    const classItem = await Class.findById(req.params.id).populate(
+      "sundaySchoolId"
+    );
     if (!classItem) {
       return res.status(404).json({ error: "Class not found" });
     }
@@ -27,8 +30,9 @@ export const getClassById = async (req, res) => {
 // Get classes by Sunday school
 export const getClassesBySundaySchool = async (req, res) => {
   try {
-    const classes = await Class.find({ sundaySchoolId: req.params.sundaySchoolId })
-      .populate("sundaySchoolId");
+    const classes = await Class.find({
+      sundaySchoolId: req.params.sundaySchoolId,
+    }).populate("sundaySchoolId");
     res.json(classes);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -45,7 +49,9 @@ export const createClass = async (req, res) => {
     }
     const classItem = new Class(req.body);
     await classItem.save();
-    const populated = await Class.findById(classItem._id).populate("sundaySchoolId");
+    const populated = await Class.findById(classItem._id).populate(
+      "sundaySchoolId"
+    );
     res.status(201).json(populated);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -55,11 +61,10 @@ export const createClass = async (req, res) => {
 // Update class
 export const updateClass = async (req, res) => {
   try {
-    const classItem = await Class.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    ).populate("sundaySchoolId");
+    const classItem = await Class.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    }).populate("sundaySchoolId");
     if (!classItem) {
       return res.status(404).json({ error: "Class not found" });
     }
