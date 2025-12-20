@@ -28,7 +28,7 @@ export const login = async (req, res) => {
   req.session.userId = user._id.toString();
   req.session.roleName = roleName;
   req.session.username = user.username;
-
+  req.session.sundaySchoolId = user.sundaySchoolId || null;
   return res.json({ message: "Login successful", roleName });
 };
 
