@@ -1,39 +1,40 @@
 import express from "express";
+import cors from "cors";
+import session from "express-session";
 import mongoose from "mongoose";
-import cors from "cors"; // For handling CORS
+import authRoutes from "./routes/authRoutes.js";
 import routes from "./routes/index.js";
 
-import authRoutes from "./routes/authRoutes.js";
-import session from "express-session";
-// Initialize Express app
 const app = express();
 
-// Global Middleware
-// Enable CORS - Allow requests from ANY origin (open to all websites)
+// 1. CORS must be first - before any routes or other middleware
 app.use(
   cors({
-    origin: "*", // Allows all origins (use specific domains in production for security)
+    origin: "https://dioceses-direct.lovable.app", // or "*" for testing
+    credentials: true, // VERY IMPORTANT for cookies/sessions
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // Required if using cookies or sessions
   })
 );
 
-// Parse JSON request bodies
+// 2. Parse JSON
 app.use(express.json());
-// Uncomment if you need URL-encoded form data
-// app.use(express.urlencoded({ extended: true }));
 
-// Uncomment if you need session support (currently disabled)
+// 3. Session (after CORS)
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "dev-secret",
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      secure: true, // Required for HTTPS (Render is HTTPS)
+      sameSite: "none", // Required for cross-origin cookies
+      httpOnly: true,
+    },
   })
 );
 
-// MongoDB Connection
+// MongoDB connection (your existing code)
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(
@@ -42,45 +43,24 @@ const connectDB = async () => {
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error("MongoDB Connection Error:", error.message);
-    process.exit(1); // Exit process if connection fails
+    process.exit(1);
   }
 };
-
-// Connect to MongoDB
 connectDB();
 
 // Routes
-app.use("/", authRoutes); // Authentication routes (e.g., /login)
-app.use("/api", routes); // Main API routes (e.g., /api/dioceses)
+app.use("/", authRoutes);
+app.use("/api", routes);
 
-// Root route - Simple API welcome message
+// Root route
 app.get("/", (req, res) => {
-  res.json({
-    message: "Church Management System API",
-    status: "online",
-    endpoints: {
-      auth: "/login",
-      api: "/api",
-      dashboard: "/dashboard",
-    },
-  });
+  res.json({ message: "Church Management System API", status: "online" });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    message: err.message || "Internal Server Error",
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }), // Show stack in dev only
-  });
-});
+// Error handling & 404 (your existing code)
 
-// 404 - Route not found
-app.use((req, res) => {
-  res.status(404).json({
-    message: "Route not found",
-    path: req.originalUrl,
-  });
-});
+// Start server (assuming you have this elsewhere)
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 export default app;
