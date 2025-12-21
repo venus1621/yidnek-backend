@@ -11,18 +11,12 @@ import {
 
 const router = express.Router();
 
-// More specific route first
-router.get("/sunday-school/:sundaySchoolId", getStudentBySundayschool);
-
-// General routes
 router.get("/", getAllStudents);
 router.get("/:id", getStudentById);
-
-// Create & update with optional photo upload
-router.post("/", createStudent);
+router.post("/", uploadStudentPhoto, createStudent);
 router.put("/:id", uploadStudentPhoto, updateStudent);
-
-// Delete student
 router.delete("/:id", deleteStudent);
+router.get("/sunday-school/:sundaySchoolId", getStudentBySundayschool);
 
 export default router;
+

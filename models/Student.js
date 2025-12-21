@@ -74,8 +74,6 @@ studentSchema.pre("save", async function (next) {
     );
 
     this.studentCode = counter.seq.toString().padStart(4, "0");
-
-    next();
   } catch (err) {
     next(err); // Proper error handling
   }

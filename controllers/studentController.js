@@ -76,21 +76,10 @@ export const createStudent = async (req, res) => {
     }
 
     // Create student with or without photo
-   const student = new Student({
-     firstName: req.body.firstName,
-     fatherName: req.body.fatherName,
-     grandfatherName: req.body.grandfatherName,
-     sundaySchoolId: req.body.sundaySchoolId,
-     gender: req.body.gender,
-     dateOfBirth: req.body.dateOfBirth,
-     christianName: req.body.christianName,
-     confessionFatherName: req.body.confessionFatherName,
-     studentPhone: req.body.studentPhone,
-     address: req.body.address,
-     guardian: req.body.guardian,
-     studentPhoto: studentPhotoUrl || undefined,
-   });
-
+    const student = new Student({
+      ...req.body,
+      studentPhoto: studentPhotoUrl || undefined, // optional
+    });
     await student.save();
 
     res.status(201).json({
