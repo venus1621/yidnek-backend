@@ -1,7 +1,6 @@
 // models/Student.js
 import mongoose from "mongoose";
 
-
 /* Counter (inside same file) */
 const counterSchema = new mongoose.Schema({
   name: { type: String, unique: true },
@@ -10,17 +9,19 @@ const counterSchema = new mongoose.Schema({
 
 const Counter = mongoose.model("StudentCounter", counterSchema);
 
-
 const studentSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true, trim: true },
     fatherName: { type: String, required: true, trim: true },
     grandfatherName: { type: String, required: true, trim: true },
-    studentId: {
+
+    // Auto-generated student code
+    studentCode: {
       type: String,
-      require: true,
+      unique: true,
       trim: true,
     },
+
     sundaySchoolId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SundaySchool",
@@ -60,17 +61,24 @@ const studentSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+/* 🔹 AUTO-INCREMENT studentCode */
 studentSchema.pre("save", async function (next) {
-  if (this.studentCode) return next();
+  if (this.studentCode) return next(); // Already exists, skip
 
-  const counter = await Counter.findOneAndUpdate(
-    { name: "studentCode" },
-    { $inc: { seq: 1 } },
-    { new: true, upsert: true }
-  );
+  try {
+    const counter = await Counter.findOneAndUpdate(
+      { name: "studentCode" },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
 
-  this.studentCode = counter.seq.toString().padStart(4, "0");
+    this.studentCode = counter.seq.toString().padStart(4, "0");
 
-  next();
+    next();
+  } catch (err) {
+    next(err); // Proper error handling
+  }
 });
+
 export default mongoose.model("Student", studentSchema);
