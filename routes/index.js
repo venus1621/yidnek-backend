@@ -13,7 +13,6 @@ import studentMarkRoutes from "./studentMarkRoutes.js";
 import registrationRoutes from "./registrationRoutes.js";
 import userRoutes from "./userRoutes.js";
 import roleRoutes from "./roleRoutes.js";
-import TeacherAssign from "../models/teacherAssign.js";
 
 const router = express.Router();
 
@@ -24,7 +23,6 @@ router.use("/woredas", woredaRoutes);
 router.use("/sunday-schools", sundaySchoolRoutes);
 router.use("/teachers", teacherRoutes);
 router.use("/classes", classRoutes);
-router.use("/teacher-assignments", teacherAssignmentRoutes);
 router.use("/students", studentRoutes);
 router.use("/class-enrollments", classEnrollmentRoutes);
 router.use("/assessments", assessmentRoutes);
