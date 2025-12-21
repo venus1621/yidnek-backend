@@ -53,7 +53,7 @@ const studentSchema = new mongoose.Schema(
     },
 
     guardian: {
-      fullName: { type: String, trim: true },
+      fullName: { type: String, required: true, trim: true },
       relationship: String,
       phone: String,
     },
