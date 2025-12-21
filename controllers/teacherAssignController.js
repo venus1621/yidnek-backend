@@ -1,4 +1,4 @@
-import TeacherAssign from "../models/TeacherAssign.js";
+import TeacherAssign from "../models/teacherAssign.js";
 import Class from "../models/Class.js";
 import Teacher from "../models/Teacher.js";
 
