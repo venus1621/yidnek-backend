@@ -1,6 +1,25 @@
 import Student from "../models/Student.js";
 
-// Get all students for super admin 
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
+
+/* ===============================
+   CLOUDINARY CONFIG
+================================ */
+cloudinary.config({
+  cloud_name: "dnkei7qmd",
+  api_key: "253842746644724",
+  api_secret: process.env.CLOUDINARY_API_SECRET, // keep in .env
+});
+
+/* ===============================
+   MULTER CONFIG (MEMORY)
+   Optional photo upload supported
+================================ */
+const storage = multer.memoryStorage();
+export const uploadStudentPhoto = multer({ storage }).single("studentPhoto");
+
+// Get all students for super admin
 export const getAllStudents = async (req, res) => {
   try {
     const students = await Student.find();
@@ -12,7 +31,9 @@ export const getAllStudents = async (req, res) => {
 
 export const getStudentBySundayschool = async (req, res) => {
   try {
-    const students = await Student.find({ sundaySchoolId: req.params.sundaySchoolId });
+    const students = await Student.find({
+      sundaySchoolId: req.params.sundaySchoolId,
+    });
     res.json(students);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -35,14 +56,44 @@ export const getStudentById = async (req, res) => {
 // Create student
 export const createStudent = async (req, res) => {
   try {
-    const student = new Student(req.body);
+    let studentPhotoUrl = null;
+
+    // 🔹 Upload image to Cloudinary if a file is provided
+    if (req.file) {
+      const uploadResult = await cloudinary.uploader.upload(
+        `data:${req.file.mimetype};base64,${req.file.buffer.toString(
+          "base64"
+        )}`,
+        {
+          folder: "students",
+          transformation: [
+            { width: 500, height: 500, crop: "auto", gravity: "auto" },
+          ],
+        }
+      );
+
+      studentPhotoUrl = uploadResult.secure_url;
+    }
+
+    // Create student with or without photo
+    const student = new Student({
+      ...req.body,
+      studentPhoto: studentPhotoUrl || undefined, // optional
+    });
+
     await student.save();
-    res.status(201).json(student);
+
+    res.status(201).json({
+      success: true,
+      data: student,
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
-
 // Update student
 export const updateStudent = async (req, res) => {
   try {
