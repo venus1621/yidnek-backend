@@ -19,7 +19,7 @@ router.get("/", getAllStudents);
 router.get("/:id", getStudentById);
 
 // Create & update with optional photo upload
-router.post("/", uploadStudentPhoto, createStudent);
+router.post("/", createStudent);
 router.put("/:id", uploadStudentPhoto, updateStudent);
 
 // Delete student
