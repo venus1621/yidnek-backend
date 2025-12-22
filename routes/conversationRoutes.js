@@ -10,7 +10,7 @@ import {
 import { requireAuth } from "../middlewares/auth.js";
 
 const router = express.Router();
-
+//fsdfasdaf
 // All routes require authentication
 router.use(requireAuth);
 
