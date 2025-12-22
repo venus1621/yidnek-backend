@@ -9,7 +9,7 @@ import multer from "multer";
 cloudinary.config({
   cloud_name: "dnkei7qmd",
   api_key: "253842746644724",
-  api_secret: process.env.CLOUDINARY_API_SECRET, // keep in .env
+  api_secret: "m8MrfvHdbIgUUlk9VqGRSLFo-4g", // keep in .env
 });
 
 /* ===============================
