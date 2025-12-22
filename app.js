@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import session from "express-session";
@@ -35,12 +38,10 @@ app.use(
   })
 );
 
-// MongoDB connection (your existing code)
+// MongoDB connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(
-      "mongodb+srv://venushailemeskel2_db_user:EnkJfmHa6IIzMAo1@cluster0.5qhgkss.mongodb.net/"
-    );
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error("MongoDB Connection Error:", error.message);
@@ -57,11 +58,5 @@ app.use("/api", routes);
 app.get("/", (req, res) => {
   res.json({ message: "Church Management System API", status: "online" });
 });
-
-// Error handling & 404 (your existing code)
-
-// Start server (assuming you have this elsewhere)
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 export default app;

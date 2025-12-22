@@ -1,16 +1,6 @@
 import Student from "../models/Student.js";
-
-import { v2 as cloudinary } from "cloudinary";
+import cloudinary from "../config/cloudinary.js";
 import multer from "multer";
-
-/* ===============================
-   CLOUDINARY CONFIG
-================================ */
-cloudinary.config({
-  cloud_name: "dnkei7qmd",
-  api_key: "253842746644724",
-  api_secret: "m8MrfvHdbIgUUlk9VqGRSLFo-4g", // keep in .env
-});
 
 /* ===============================
    MULTER CONFIG (MEMORY)
