@@ -96,3 +96,42 @@ export const getMessagesByConversation = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const markAsRead = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { conversationId } = req.params;
+
+    if (!conversationId) {
+      return res.status(400).json({ error: "conversationId is required" });
+    }
+
+    // Update unread messages only
+    await Message.updateMany(
+      {
+        conversationId,
+        "readBy.user": { $ne: userId },
+      },
+      {
+        $push: {
+          readBy: {
+            user: userId,
+            readAt: new Date(),
+          },
+        },
+      }
+    );
+
+    // Emit read receipt (optional but recommended)
+    const io = req.app.get("io");
+    io.to(`conversation:${conversationId}`).emit("messagesRead", {
+      conversationId,
+      userId,
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("markAsRead error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};

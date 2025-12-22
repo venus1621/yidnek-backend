@@ -13,7 +13,7 @@ import studentMarkRoutes from "./studentMarkRoutes.js";
 import registrationRoutes from "./registrationRoutes.js";
 import userRoutes from "./userRoutes.js";
 import roleRoutes from "./roleRoutes.js";
-
+import messageRoutes from "./messageRoutes.js";
 const router = express.Router();
 
 // Mount all routes
@@ -31,6 +31,6 @@ router.use("/teacher-assigns", teacherAssignmentRoutes);
 router.use("/registrations", registrationRoutes);
 router.use("/users", userRoutes);
 router.use("/roles", roleRoutes);
-
+router.use("/messages", messageRoutes);
 export default router;
 
