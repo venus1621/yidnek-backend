@@ -10,11 +10,13 @@ import routes from "./routes/index.js";
 
 const app = express();
 
+// Trust proxy (required for Render and other proxies)
+app.set("trust proxy", 1);
+
 // 1. CORS must be first - before any routes or other middleware
-// Allow ALL origins (use only for development/testing!)
 app.use(cors({
-  origin: true,              // allows any origin (wildcard *)
-  credentials: true,         // still allows cookies/sessions
+  origin: true,              // allows any origin
+  credentials: true,         // allows cookies/sessions
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   preflightContinue: false,
@@ -31,9 +33,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true, // Required for HTTPS (Render is HTTPS)
-      sameSite: "none", // Required for cross-origin cookies
+      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Cross-origin in production
       httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     },
   })
 );

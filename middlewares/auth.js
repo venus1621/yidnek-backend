@@ -4,7 +4,11 @@
  */
 export const requireAuth = (req, res, next) => {
   if (!req.session || !req.session.userId) {
-    return res.status(401).json({ error: "Authentication required" });
+    return res.status(401).json({ 
+      error: "Session expired or not logged in",
+      code: "AUTH_REQUIRED",
+      message: "Please log in again to continue"
+    });
   }
 
   // Populate req.user for controllers
