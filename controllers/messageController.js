@@ -57,26 +57,31 @@ export const sendMessage = async (req, res) => {
     conversation.lastMessage = message._id;
     await conversation.save();
 
+    // Populate sender info for real-time emission
+    const populatedMessage = await Message.findById(message._id)
+      .populate("sender", "username");
+
     const io = req.app.get("io");
 
     // 1️⃣ Send message to conversation room
-    io.to(`conversation:${conversationId}`).emit("newMessage", message);
+    io.to(`conversation:${conversationId}`).emit("newMessage", populatedMessage);
 
     // 2️⃣ Notify participants (except sender)
-    conversation.participants.forEach((userId) => {
-      if (userId.toString() !== senderId) {
-        io.to(`user:${userId}`).emit("notification", {
+    conversation.participants.forEach((participantId) => {
+      if (participantId.toString() !== senderId) {
+        io.to(`user:${participantId}`).emit("notification", {
           type: "NEW_MESSAGE",
           conversationId,
           messageId: message._id,
           from: senderId,
+          senderName: req.user.username,
           preview: content?.slice(0, 50) || "📎 New attachment",
           createdAt: message.createdAt,
         });
       }
     });
 
-    res.status(201).json({ success: true, data: message });
+    res.status(201).json({ success: true, data: populatedMessage });
   } catch (err) {
     console.error("sendMessage error:", err);
     res.status(500).json({ error: err.message });
