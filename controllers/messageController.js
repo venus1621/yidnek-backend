@@ -95,6 +95,39 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+export const downloadFile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { messageId, fileIndex } = req.params;
+
+    const message = await Message.findById(messageId);
+    if (!message) return res.status(404).json({ error: "Message not found" });
+
+    // optional: ensure user is a participant in the conversation
+    const isParticipant = message.conversationId && message.conversationId;
+
+    const index = parseInt(fileIndex, 10);
+    if (Number.isNaN(index) || index < 0 || index >= (message.files || []).length) {
+      return res.status(400).json({ error: "Invalid file index" });
+    }
+
+    const file = message.files[index];
+    if (!file || !file.url) return res.status(404).json({ error: "File not found" });
+
+    // Use existing downloadUrl if stored, otherwise generate one
+    let downloadUrl = file.downloadUrl;
+    if (!downloadUrl) {
+      downloadUrl = file.url.replace("/upload/", "/upload/fl_attachment/");
+    }
+
+    // Redirect client to Cloudinary download URL (Cloudinary handles content-disposition)
+    return res.redirect(downloadUrl);
+  } catch (err) {
+    console.error("downloadFile error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 export const getMessagesByConversation = async (req, res) => {
   try {
