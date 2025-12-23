@@ -1,6 +1,32 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
+import https from "https";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload.js";
+
+/**
+ * Fix filename encoding for non-ASCII characters (Amharic, Arabic, etc.)
+ * Browsers may send filenames in Latin-1 encoding
+ */
+const fixFilenameEncoding = (filename) => {
+  if (!filename) return filename;
+  
+  try {
+    // Check if filename contains mojibake (corrupted UTF-8)
+    // Try to decode from Latin-1 to UTF-8
+    const buffer = Buffer.from(filename, "latin1");
+    const decoded = buffer.toString("utf8");
+    
+    // If decoded version has valid Unicode characters, use it
+    // Check if original looks corrupted (has replacement chars or weird sequences)
+    if (decoded && !decoded.includes("�") && decoded !== filename) {
+      return decoded;
+    }
+    
+    return filename;
+  } catch (e) {
+    return filename;
+  }
+};
 
 /**
  * SEND MESSAGE (TEXT / FILE / IMAGE)
@@ -35,10 +61,13 @@ export const sendMessage = async (req, res) => {
           "/upload/fl_attachment/"
         );
 
+        // Fix filename encoding for non-ASCII characters
+        const originalName = fixFilenameEncoding(file.originalname);
+
         uploadedFiles.push({
           url: uploadResult.secure_url, // preview / open
           downloadUrl, // force download
-          originalName: file.originalname,
+          originalName: originalName,
           mimeType: file.mimetype,
           size: file.size,
         });
@@ -114,14 +143,45 @@ export const downloadFile = async (req, res) => {
     const file = message.files[index];
     if (!file || !file.url) return res.status(404).json({ error: "File not found" });
 
-    // Use existing downloadUrl if stored, otherwise generate one
-    let downloadUrl = file.downloadUrl;
-    if (!downloadUrl) {
-      downloadUrl = file.url.replace("/upload/", "/upload/fl_attachment/");
-    }
+    // Stream the file from Cloudinary and force the download filename
+    const originalName = file.originalName || "download";
 
-    // Redirect client to Cloudinary download URL (Cloudinary handles content-disposition)
-    return res.redirect(downloadUrl);
+    // Set response headers for attachment with UTF-8 filename
+    res.setHeader("Content-Type", file.mimeType || "application/octet-stream");
+    // Use RFC5987 encoding for Unicode filenames
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename*=UTF-8''${encodeURIComponent(originalName)}`
+    );
+
+    const fileUrl = file.url;
+    const parsedUrl = new URL(fileUrl);
+
+    // GET the file from Cloudinary and pipe to client
+    https
+      .get(parsedUrl, (cloudRes) => {
+        // Follow redirect if any
+        if (cloudRes.statusCode >= 300 && cloudRes.statusCode < 400 && cloudRes.headers.location) {
+          https.get(cloudRes.headers.location, (r2) => {
+            r2.pipe(res);
+          }).on("error", (err) => {
+            console.error("follow redirect error:", err);
+            res.status(500).end();
+          });
+          return;
+        }
+
+        if (cloudRes.statusCode !== 200) {
+          res.status(cloudRes.statusCode).end();
+          return;
+        }
+
+        cloudRes.pipe(res);
+      })
+      .on("error", (err) => {
+        console.error("download proxy error:", err);
+        res.status(500).json({ error: err.message });
+      });
   } catch (err) {
     console.error("downloadFile error:", err);
     res.status(500).json({ error: err.message });
