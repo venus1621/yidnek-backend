@@ -1,7 +1,11 @@
 
 import mongoose from "mongoose";
-const teacherAssignmentSchema = new mongoose.Schema({
-  teacherId:{ type: mongoose.Schema.Types.ObjectId, ref:"Teacher" },
-  classId:{ type: mongoose.Schema.Types.ObjectId, ref:"Class" }
-},{timestamps:true});
-export default mongoose.model("TeacherAssignment", teacherAssignmentSchema);
+const teacherAssignSchema = new mongoose.Schema(
+  {
+    classId: { type: mongoose.Schema.Types.ObjectId, ref: "Class" },
+    teacherId: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher" },
+    course: String,
+  },
+  { timestamps: true }
+);
+export default mongoose.model("TeacherAssign", teacherAssignSchema);
