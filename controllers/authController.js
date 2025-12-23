@@ -13,7 +13,29 @@ export const login = async (req, res) => {
       .json({ error: "Username and password are required." });
   }
 
-  const user = await User.findOne({ username }).populate("roles");
+  const user = await User.findOne({ username })
+    .populate({
+      path: "roles",
+      select: "name",
+    })
+    .populate({
+      path: "sundaySchoolId",
+      select: "name woredaId",
+      populate: {
+        path: "woredaId",
+        select: "name dioceseId",
+        populate: {
+          path: "dioceseId",
+          select: "name churchId",
+          populate: {
+            path: "churchId",
+            select: "name",
+          },
+        },
+      },
+    })
+    .lean();
+
   if (!user) {
     return res.status(401).json({ error: "Invalid credentials." });
   }
@@ -29,7 +51,7 @@ export const login = async (req, res) => {
   req.session.roleName = roleName;
   req.session.username = user.username;
   req.session.sundaySchoolId = user.sundaySchoolId || null;
-  
+
   return res.json({
     message: "Login successful",
     userId: user._id.toString(),

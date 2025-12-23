@@ -5,7 +5,6 @@ const teacherAssignSchema = new mongoose.Schema(
     classId: { type: mongoose.Schema.Types.ObjectId, ref: "Class" },
     teacherId: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher" },
     course: String,
-    maxScore: Number,
   },
   { timestamps: true }
 );
