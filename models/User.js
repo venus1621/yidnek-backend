@@ -2,6 +2,7 @@
 import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
   {
+    fullName: String,
     username: String,
     passwordHash: String,
     roles: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }],
