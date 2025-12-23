@@ -29,8 +29,15 @@ export const sendMessage = async (req, res) => {
           "messages"
         );
 
+        // 🔑 Generate force-download URL
+        const downloadUrl = uploadResult.secure_url.replace(
+          "/upload/",
+          "/upload/fl_attachment/"
+        );
+
         uploadedFiles.push({
-          url: uploadResult.secure_url,
+          url: uploadResult.secure_url, // preview / open
+          downloadUrl, // force download
           originalName: file.originalname,
           mimeType: file.mimetype,
           size: file.size,
@@ -87,6 +94,7 @@ export const sendMessage = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 export const getMessagesByConversation = async (req, res) => {
   try {
